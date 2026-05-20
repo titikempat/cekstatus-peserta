@@ -122,6 +122,25 @@ background:#25D366;
 color:white;
 }
 
+.qr-box{
+text-align:center;
+margin-bottom:25px;
+}
+
+.qr-box img{
+background:white;
+padding:10px;
+border-radius:18px;
+width:220px;
+height:220px;
+}
+
+.qr-text{
+margin-top:10px;
+font-size:14px;
+color:#ccc;
+}
+
 </style>
 
 </head>
@@ -196,9 +215,7 @@ document.getElementById("resultBox")
 try{
 
 const response = await fetch(
-
 `${WEBAPP_URL}?registerId=${registerId}`
-
 );
 
 const res = await response.json();
@@ -233,6 +250,22 @@ ${registerId}`
 );
 
 // ======================================
+// QR CODE
+// ======================================
+
+const qrCode =
+encodeURIComponent(
+`RFYL26|${registerId}|${res.bib}`
+);
+
+// ======================================
+// E-BIB LINK
+// ======================================
+
+const ebibLink =
+`${WEBAPP_URL}?id=${registerId}`;
+
+// ======================================
 // TAMPILKAN HASIL
 // ======================================
 
@@ -245,6 +278,18 @@ color:#f6c453;
 ">
 🏃 DATA PESERTA
 </h2>
+
+<div class="qr-box">
+
+<img
+src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${qrCode}"
+>
+
+<div class="qr-text">
+Scan QR untuk Racepack / Check-in
+</div>
+
+</div>
 
 <b>Nama :</b>
 ${res.nama}<br>
@@ -260,6 +305,9 @@ ${res.jersey}<br>
 
 <b>Batch :</b>
 ${res.batch}<br>
+
+<b>Total :</b>
+Rp ${res.harga}<br>
 
 <hr style="
 border:none;
@@ -302,7 +350,7 @@ ${res.checkinStatus}
 </span>
 
 <a
-href="${WEBAPP_URL}?page=ebib&id=${registerId}"
+href="${ebibLink}"
 target="_blank"
 class="action-btn ebib-btn"
 >
