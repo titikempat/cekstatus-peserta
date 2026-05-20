@@ -69,6 +69,11 @@ color:#06152d;
 font-size:18px;
 font-weight:700;
 cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+transform:scale(1.02);
 }
 
 .result{
@@ -95,6 +100,26 @@ font-weight:700;
 .status-pending{
 color:#ffcc66;
 font-weight:700;
+}
+
+.action-btn{
+display:block;
+text-decoration:none;
+padding:16px;
+border-radius:14px;
+text-align:center;
+font-weight:700;
+margin-top:15px;
+}
+
+.ebib-btn{
+background:#f6c453;
+color:#06152d;
+}
+
+.share-btn{
+background:#25D366;
+color:white;
 }
 
 </style>
@@ -136,17 +161,30 @@ CEK STATUS
 
 <script>
 
+// ======================================
+// WEB APP URL
+// ======================================
+
 const WEBAPP_URL =
 "https://script.google.com/macros/s/AKfycbwr5NReGwYtYWt7hvx4Kw_LwAEZ2d0hVj3WGUPxfYzDXfFO8tno8w-PBO026at7ZNAcaw/exec";
+
+// ======================================
+// CEK PESERTA
+// ======================================
 
 async function cekPeserta(){
 
 const registerId =
-document.getElementById("registerId").value.trim();
+document.getElementById("registerId")
+.value
+.trim();
 
 if(registerId === ""){
+
 alert("Masukkan Register ID");
+
 return;
+
 }
 
 document.getElementById("loading")
@@ -158,7 +196,9 @@ document.getElementById("resultBox")
 try{
 
 const response = await fetch(
+
 `${WEBAPP_URL}?registerId=${registerId}`
+
 );
 
 const res = await response.json();
@@ -166,50 +206,126 @@ const res = await response.json();
 document.getElementById("loading")
 .style.display = "none";
 
+// ======================================
+// DATA DITEMUKAN
+// ======================================
+
 if(res.status === "success"){
 
 document.getElementById("resultBox")
 .style.display = "block";
 
+// ======================================
+// SHARE MESSAGE
+// ======================================
+
+const shareText = encodeURIComponent(
+
+`🏃 RUN FOR YOUR LIFE 2026
+
+Nama : ${res.nama}
+BIB : ${res.bib}
+Kategori : ${res.kategori}
+
+Register ID :
+${registerId}`
+
+);
+
+// ======================================
+// TAMPILKAN HASIL
+// ======================================
+
 document.getElementById("hasil")
 .innerHTML = `
 
-<h2 style="margin-bottom:20px;color:#f6c453;">
+<h2 style="
+margin-bottom:20px;
+color:#f6c453;
+">
 🏃 DATA PESERTA
 </h2>
 
-<b>Nama :</b> ${res.nama}<br>
+<b>Nama :</b>
+${res.nama}<br>
 
-<b>BIB :</b> ${res.bib}<br>
+<b>BIB :</b>
+${res.bib}<br>
 
-<b>Kategori :</b> ${res.kategori}<br>
+<b>Kategori :</b>
+${res.kategori}<br>
 
-<b>Jersey :</b> ${res.jersey}<br>
+<b>Jersey :</b>
+${res.jersey}<br>
 
-<b>Batch :</b> ${res.batch}<br><br>
+<b>Batch :</b>
+${res.batch}<br>
 
-<hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:15px 0;">
+<hr style="
+border:none;
+border-top:1px solid rgba(255,255,255,0.1);
+margin:20px 0;
+">
 
 <b>Payment Status :</b>
+
 <span class="${
 res.paymentStatus === "PAID"
 ? "status-paid"
 : "status-pending"
 }">
 ${res.paymentStatus}
-</span><br>
+</span>
+
+<br>
 
 <b>RPC Status :</b>
-${res.rpcStatus}<br>
+
+<span class="${
+res.rpcStatus === "DONE"
+? "status-paid"
+: "status-pending"
+}">
+${res.rpcStatus}
+</span>
+
+<br>
 
 <b>Check-in :</b>
+
+<span class="${
+res.checkinStatus === "DONE"
+? "status-paid"
+: "status-pending"
+}">
 ${res.checkinStatus}
+</span>
+
+<a
+href="${WEBAPP_URL}?page=ebib&id=${registerId}"
+target="_blank"
+class="action-btn ebib-btn"
+>
+
+🎫 LIHAT E-BIB
+
+</a>
+
+<a
+href="https://wa.me/?text=${shareText}"
+target="_blank"
+class="action-btn share-btn"
+>
+
+📩 SHARE DATA PESERTA
+
+</a>
 
 `;
 
 }else{
 
-alert("Data tidak ditemukan");
+alert("Data peserta tidak ditemukan");
 
 }
 
@@ -219,6 +335,8 @@ document.getElementById("loading")
 .style.display = "none";
 
 alert("ERROR : " + err.message);
+
+console.log(err);
 
 }
 
