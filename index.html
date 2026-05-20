@@ -110,6 +110,11 @@ border-radius:14px;
 text-align:center;
 font-weight:700;
 margin-top:15px;
+transition:0.3s;
+}
+
+.action-btn:hover{
+transform:scale(1.02);
 }
 
 .ebib-btn{
@@ -133,12 +138,19 @@ padding:10px;
 border-radius:18px;
 width:220px;
 height:220px;
+object-fit:contain;
 }
 
 .qr-text{
 margin-top:10px;
 font-size:14px;
 color:#ccc;
+}
+
+hr{
+border:none;
+border-top:1px solid rgba(255,255,255,0.1);
+margin:20px 0;
 }
 
 </style>
@@ -171,9 +183,7 @@ CEK STATUS
 </div>
 
 <div class="result" id="resultBox">
-
 <div id="hasil"></div>
-
 </div>
 
 </div>
@@ -186,6 +196,13 @@ CEK STATUS
 
 const WEBAPP_URL =
 "https://script.google.com/macros/s/AKfycbwr5NReGwYtYWt7hvx4Kw_LwAEZ2d0hVj3WGUPxfYzDXfFO8tno8w-PBO026at7ZNAcaw/exec";
+
+// ======================================
+// URL E-BIB GITHUB
+// ======================================
+
+const EBIB_URL =
+"https://titikempat.github.io/ebib-RFYL.html/";
 
 // ======================================
 // CEK PESERTA
@@ -214,6 +231,10 @@ document.getElementById("resultBox")
 
 try{
 
+// ======================================
+// FETCH DATA
+// ======================================
+
 const response = await fetch(
 `${WEBAPP_URL}?registerId=${registerId}`
 );
@@ -233,6 +254,20 @@ document.getElementById("resultBox")
 .style.display = "block";
 
 // ======================================
+// LINK E-BIB
+// ======================================
+
+const ebibLink =
+`${EBIB_URL}?id=${registerId}`;
+
+// ======================================
+// QR CODE
+// ======================================
+
+const qrCode =
+encodeURIComponent(ebibLink);
+
+// ======================================
 // SHARE MESSAGE
 // ======================================
 
@@ -245,25 +280,15 @@ BIB : ${res.bib}
 Kategori : ${res.kategori}
 
 Register ID :
-${registerId}`
+${registerId}
+
+Lihat E-BIB :
+${ebibLink}`
 
 );
 
 // ======================================
-// QR CODE
-// ======================================
-
-const qrCode =
-`https://script.google.com/macros/s/AKfycbwr5NReGwYtYWt7hvx4Kw_LwAEZ2d0hVj3WGUPxfYzDXfFO8tno8w-PBO026at7ZNAcaw/exec?page=scan&id=${registerId}`;
-// ======================================
-// E-BIB LINK
-// ======================================
-
-const ebibLink =
-`${WEBAPP_URL}?id=${registerId}`;
-
-// ======================================
-// TAMPILKAN HASIL
+// TAMPILKAN DATA
 // ======================================
 
 document.getElementById("hasil")
@@ -280,10 +305,11 @@ color:#f6c453;
 
 <img
 src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${qrCode}"
+alt="QR CODE"
 >
 
 <div class="qr-text">
-Scan QR untuk Racepack / Check-in
+Scan QR untuk membuka E-BIB peserta
 </div>
 
 </div>
@@ -306,11 +332,7 @@ ${res.batch}<br>
 <b>Total :</b>
 Rp ${res.harga}<br>
 
-<hr style="
-border:none;
-border-top:1px solid rgba(255,255,255,0.1);
-margin:20px 0;
-">
+<hr>
 
 <b>Payment Status :</b>
 
