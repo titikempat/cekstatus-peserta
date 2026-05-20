@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CEK STATUS PESERTA</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#06152d;
+padding:20px;
+color:white;
+}
+
+.container{
+max-width:700px;
+margin:auto;
+background:#0d2347;
+padding:30px;
+border-radius:24px;
+box-shadow:0 0 40px rgba(0,0,0,0.4);
+}
+
+h1{
+text-align:center;
+margin-bottom:30px;
+color:#f6c453;
+}
+
+.input-group{
+margin-bottom:20px;
+}
+
+label{
+display:block;
+margin-bottom:10px;
+font-weight:600;
+}
+
+input{
+width:100%;
+padding:15px;
+border:none;
+border-radius:14px;
+background:#132f5e;
+color:white;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:16px;
+border:none;
+border-radius:14px;
+background:#f6c453;
+color:#06152d;
+font-size:18px;
+font-weight:700;
+cursor:pointer;
+}
+
+.result{
+display:none;
+margin-top:30px;
+background:#132f5e;
+padding:25px;
+border-radius:18px;
+line-height:2;
+}
+
+.loading{
+display:none;
+text-align:center;
+margin-top:20px;
+color:#f6c453;
+}
+
+.status-paid{
+color:#6effa7;
+font-weight:700;
+}
+
+.status-pending{
+color:#ffcc66;
+font-weight:700;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>CEK STATUS PESERTA</h1>
+
+<div class="input-group">
+
+<label>Register ID</label>
+
+<input
+type="text"
+id="registerId"
+placeholder="Contoh: RFYL26-5K-M0001">
+
+</div>
+
+<button onclick="cekPeserta()">
+CEK STATUS
+</button>
+
+<div class="loading" id="loading">
+⏳ Sedang mencari data...
+</div>
+
+<div class="result" id="resultBox">
+
+<div id="hasil"></div>
+
+</div>
+
+</div>
+
+<script>
+
+const WEBAPP_URL =
+"https://script.google.com/macros/s/AKfycbwr5NReGwYtYWt7hvx4Kw_LwAEZ2d0hVj3WGUPxfYzDXfFO8tno8w-PBO026at7ZNAcaw/exec";
+
+async function cekPeserta(){
+
+const registerId =
+document.getElementById("registerId").value.trim();
+
+if(registerId === ""){
+alert("Masukkan Register ID");
+return;
+}
+
+document.getElementById("loading")
+.style.display = "block";
+
+document.getElementById("resultBox")
+.style.display = "none";
+
+try{
+
+const response = await fetch(
+`${WEBAPP_URL}?registerId=${registerId}`
+);
+
+const res = await response.json();
+
+document.getElementById("loading")
+.style.display = "none";
+
+if(res.status === "success"){
+
+document.getElementById("resultBox")
+.style.display = "block";
+
+document.getElementById("hasil")
+.innerHTML = `
+
+<h2 style="margin-bottom:20px;color:#f6c453;">
+🏃 DATA PESERTA
+</h2>
+
+<b>Nama :</b> ${res.nama}<br>
+
+<b>BIB :</b> ${res.bib}<br>
+
+<b>Kategori :</b> ${res.kategori}<br>
+
+<b>Jersey :</b> ${res.jersey}<br>
+
+<b>Batch :</b> ${res.batch}<br><br>
+
+<hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:15px 0;">
+
+<b>Payment Status :</b>
+<span class="${
+res.paymentStatus === "PAID"
+? "status-paid"
+: "status-pending"
+}">
+${res.paymentStatus}
+</span><br>
+
+<b>RPC Status :</b>
+${res.rpcStatus}<br>
+
+<b>Check-in :</b>
+${res.checkinStatus}
+
+`;
+
+}else{
+
+alert("Data tidak ditemukan");
+
+}
+
+}catch(err){
+
+document.getElementById("loading")
+.style.display = "none";
+
+alert("ERROR : " + err.message);
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
