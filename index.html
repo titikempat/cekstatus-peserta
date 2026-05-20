@@ -202,7 +202,7 @@ const WEBAPP_URL =
 // ======================================
 
 const EBIB_URL =
-"https://titikempat.github.io/ebib-RFYL.html/";
+"https://titikempat.github.io/ebib-RFYL.html";
 
 // ======================================
 // CEK PESERTA
@@ -236,7 +236,7 @@ try{
 // ======================================
 
 const response = await fetch(
-`${WEBAPP_URL}?registerId=${registerId}`
+`${WEBAPP_URL}?registerId=${encodeURIComponent(registerId)}`
 );
 
 const res = await response.json();
@@ -258,14 +258,14 @@ document.getElementById("resultBox")
 // ======================================
 
 const ebibLink =
-`${EBIB_URL}?id=${registerId}`;
+`${EBIB_URL}?id=${encodeURIComponent(registerId)}`;
 
 // ======================================
 // QR CODE
 // ======================================
 
 const qrCode =
-encodeURIComponent(ebibLink);
+`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(ebibLink)}`;
 
 // ======================================
 // SHARE MESSAGE
@@ -288,6 +288,25 @@ ${ebibLink}`
 );
 
 // ======================================
+// STATUS STYLE
+// ======================================
+
+const paymentClass =
+res.paymentStatus === "PAID"
+? "status-paid"
+: "status-pending";
+
+const rpcClass =
+res.rpcStatus === "DONE"
+? "status-paid"
+: "status-pending";
+
+const checkinClass =
+res.checkinStatus === "DONE"
+? "status-paid"
+: "status-pending";
+
+// ======================================
 // TAMPILKAN DATA
 // ======================================
 
@@ -304,9 +323,8 @@ color:#f6c453;
 <div class="qr-box">
 
 <img
-src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${qrCode}"
-alt="QR CODE"
->
+src="${qrCode}"
+alt="QR CODE">
 
 <div class="qr-text">
 Scan QR untuk membuka E-BIB peserta
@@ -336,11 +354,7 @@ Rp ${res.harga}<br>
 
 <b>Payment Status :</b>
 
-<span class="${
-res.paymentStatus === "PAID"
-? "status-paid"
-: "status-pending"
-}">
+<span class="${paymentClass}">
 ${res.paymentStatus}
 </span>
 
@@ -348,11 +362,7 @@ ${res.paymentStatus}
 
 <b>RPC Status :</b>
 
-<span class="${
-res.rpcStatus === "DONE"
-? "status-paid"
-: "status-pending"
-}">
+<span class="${rpcClass}">
 ${res.rpcStatus}
 </span>
 
@@ -360,11 +370,7 @@ ${res.rpcStatus}
 
 <b>Check-in :</b>
 
-<span class="${
-res.checkinStatus === "DONE"
-? "status-paid"
-: "status-pending"
-}">
+<span class="${checkinClass}">
 ${res.checkinStatus}
 </span>
 
